@@ -1,25 +1,62 @@
 <!doctype html>
-<html><body>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Customer portal - Registration</title>
+<!-- A small example application to try the XPath scanner on.
+     Open it in Chrome or Edge, run the scanner snippet, and load the CSV in the generator. -->
+<style>
+  body { margin: 0; font: 15px/1.5 "Segoe UI", Arial, sans-serif; color: #1f2933; background: #eef1f5; }
+  header { background: #243b53; color: #fff; padding: 12px 28px; font-size: 17px; font-weight: 600; }
+  main { max-width: 860px; margin: 22px auto; background: #fff; border: 1px solid #d5dbe3; border-radius: 6px; padding: 8px 28px 26px; }
+  h1 { font-size: 22px; margin: 18px 0 4px; }
+  h2 { font-size: 16px; margin: 22px 0 10px; padding-bottom: 5px; border-bottom: 1px solid #e1e6ec; }
+  fieldset { border: 1px solid #d5dbe3; border-radius: 6px; margin: 22px 0 0; padding: 10px 16px 16px; }
+  legend { font-weight: 600; padding: 0 6px; }
+  .row { display: flex; flex-wrap: wrap; gap: 16px 34px; align-items: center; margin: 14px 0; }
+  .field { display: flex; align-items: center; gap: 10px; }
+  .field label { font-size: 14px; color: #52606d; min-width: 74px; }
+  input[type=text], input:not([type]), select { font: inherit; padding: 6px 9px; border: 1px solid #bcc5d0; border-radius: 4px; width: 190px; box-sizing: border-box; background: #fff; }
+  .choice { display: inline-flex; align-items: center; gap: 5px; margin-right: 12px; }
+  button { font: inherit; padding: 6px 14px; border: 1px solid #9aa5b1; border-radius: 4px; background: #f5f7fa; cursor: pointer; }
+  #save { background: #243b53; color: #fff; border-color: #243b53; margin-top: 18px; padding: 8px 22px; }
+  table { border-collapse: collapse; width: 100%; }
+  th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid #e1e6ec; }
+  th { font-size: 13px; color: #52606d; }
+</style>
+</head>
+<body>
+<header>Customer portal</header>
+<main>
 <h1>Customer registration</h1>
 
 <h2>Personal data</h2>
-<label for="fn">First name</label> <input id="fn">
-<label for="ln">Last name</label> <input id="ln">
-<input type="radio" name="gender" value="f"> <span>Female</span>
-<input type="radio" name="gender" value="m"> <span>Male</span>
+<div class="row">
+  <div class="field"><label for="fn">First name</label><input id="fn"></div>
+  <div class="field"><label for="ln">Last name</label><input id="ln"></div>
+  <div>
+    <span class="choice"><input type="radio" name="gender" value="f"> <span>Female</span></span>
+    <span class="choice"><input type="radio" name="gender" value="m"> <span>Male</span></span>
+  </div>
+</div>
 
 <fieldset>
   <legend>Address data</legend>
-  <label for="city">City</label> <input id="city" name="city">
-  <label for="pc">Post code</label> <input id="pc" name="postCode">
-  <label for="street">Street</label> <input id="street">
-  <label for="ctry">Country</label> <select id="ctry"><option>Poland</option><option>Germany</option></select>
-  <div role="radiogroup" aria-label="Address type">
-    <input type="radio" name="addrType" value="h"> <strong>Home</strong>
-    <input type="radio" name="addrType" value="w"> <strong>Work</strong>
+  <div class="row">
+    <div class="field"><label for="city">City</label><input id="city" name="city"></div>
+    <div class="field"><label for="pc">Post code</label><input id="pc" name="postCode"></div>
+    <div class="field"><label for="street">Street</label><input id="street"></div>
+    <div class="field"><label for="ctry">Country</label><select id="ctry"><option>Poland</option><option>Germany</option><option>France</option></select></div>
   </div>
-  <label><input type="checkbox" name="primary"> Primary address</label>
-  <button type="button">Validate address</button>
+  <div class="row">
+    <div role="radiogroup" aria-label="Address type">
+      <span class="choice"><input type="radio" name="addrType" value="h"> <strong>Home</strong></span>
+      <span class="choice"><input type="radio" name="addrType" value="w"> <strong>Work</strong></span>
+    </div>
+    <label class="choice"><input type="checkbox" name="primary"> Primary address</label>
+    <button type="button">Validate address</button>
+  </div>
 </fieldset>
 
 <h2>Orders</h2>
@@ -30,4 +67,6 @@
 </table>
 
 <button id="save">Save</button>
-</body></html>
+</main>
+</body>
+</html>

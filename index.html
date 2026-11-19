@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Blue Prism Object Generator</title>
+<meta name="description" content="Free, offline tool for Blue Prism developers: scan a web page, pick the fields, and get a finished business object with checks and error handling.">
+<meta property="og:title" content="Blue Prism Object Generator">
+<meta property="og:description" content="Scan a web page, get a Blue Prism object. Free, offline, open source.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://geba89.github.io/bp-object-generator/">
+<meta property="og:image" content="https://geba89.github.io/bp-object-generator/docs/social-preview.png">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+  /* Fonts are stored in this repository: the page loads nothing from other servers */
+  @font-face { font-family: "Barlow"; font-weight: 400; font-display: swap; src: url("assets/fonts/barlow-latin-400-normal.woff2") format("woff2"); }
+  @font-face { font-family: "Barlow"; font-weight: 600; font-display: swap; src: url("assets/fonts/barlow-latin-600-normal.woff2") format("woff2"); }
+  @font-face { font-family: "Barlow Condensed"; font-weight: 600; font-display: swap; src: url("assets/fonts/barlow-condensed-latin-600-normal.woff2") format("woff2"); }
+
+  /* The page is a Blue Prism canvas: a faint grid, with stages drawn on it */
+  :root {
+    --canvas: #f7f8fa; --grid: #e7eaf0; --ink: #1b2330; --soft: #4d5a6b; --line: #c3cad5;
+    --stage: #ffffff; --action: #e6eefc; --blue: #1f5fd6; --blue-ink: #ffffff;
+    --ok: #1a7f37; --code: #eef1f5;
+    --text: "Barlow", "Segoe UI", system-ui, sans-serif;
+    --display: "Barlow Condensed", "Arial Narrow", "Segoe UI", sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --canvas: #141a22; --grid: #1c2430; --ink: #e7ecf3; --soft: #a3afbf; --line: #3a4658;
+      --stage: #1b2330; --action: #1d2f52; --blue: #7aa7ff; --blue-ink: #0d1420;
+      --ok: #56c271; --code: #1f2835;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  body {
+    margin: 0; color: var(--ink); background-color: var(--canvas);
+    background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 24px 24px;
+    font: 400 18px/1.55 var(--text);
+  }
+  a { color: var(--blue); text-underline-offset: 3px; }
+  a:focus-visible, .button:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; border-radius: 4px; }
+  code { font: 0.86em ui-monospace, "Cascadia Mono", Consolas, monospace; background: var(--code); padding: 2px 6px; border-radius: 4px; overflow-wrap: anywhere; }
+  .wrap { max-width: 1060px; margin: 0 auto; padding: 0 24px; }
+
+  /* Top bar */
+  .site { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; padding-top: 22px; padding-bottom: 6px; }
+  .brand { font: 600 22px/1.2 var(--display); color: var(--ink); text-decoration: none; letter-spacing: .01em; }
+  .site nav { display: flex; gap: 22px; font-size: 16px; }
+  .site nav a { color: var(--soft); text-decoration: none; }
+  .site nav a:hover { color: var(--ink); text-decoration: underline; }
+
+  /* Hero: the claim, the way in, and the demo itself */
+  .hero { padding-top: 46px; }
+  h1 { font: 600 clamp(42px, 7.2vw, 76px)/0.98 var(--display); letter-spacing: -.005em; margin: 0 0 22px; max-width: 22ch; text-wrap: balance; }
+  .lead { font-size: clamp(19px, 2.1vw, 22px); line-height: 1.45; max-width: 60ch; margin: 0 0 26px; color: var(--ink); }
+  .actions { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+  .button { display: inline-block; font: 600 18px/1 var(--text); padding: 15px 22px; border-radius: 6px; text-decoration: none; border: 1.5px solid var(--ink); color: var(--ink); background: var(--stage); }
+  .button:hover { border-color: var(--blue); color: var(--blue); }
+  .button.primary { background: var(--blue); border-color: var(--blue); color: var(--blue-ink); }
+  .button.primary:hover { filter: brightness(1.08); color: var(--blue-ink); }
+  .fine { font-size: 16px; color: var(--soft); margin: 0 0 34px; max-width: 62ch; }
+  .demo { margin: 0; }
+  .demo img { display: block; width: 100%; height: auto; border: 1.5px solid var(--ink); border-radius: 8px; background: #fff; }
+  .demo figcaption { font-size: 15px; color: var(--soft); margin-top: 10px; }
+
+  section { padding-top: 72px; }
+  h2 { font: 600 clamp(30px, 4vw, 40px)/1.05 var(--display); margin: 0 0 26px; }
+
+  /* How it works, drawn the way Blue Prism draws a process: top to bottom, Start, three actions, End.
+     Each row is a stage with its explanation beside it. */
+  .flow { list-style: none; margin: 0; padding: 0; }
+  .stage { position: relative; display: grid; grid-template-columns: 250px minmax(0, 1fr); column-gap: 40px; align-items: center; padding-top: 46px; }
+  .stage:first-child { padding-top: 0; }
+  .shape { display: flex; align-items: center; justify-content: center; min-height: 56px; padding: 8px 18px; font: 600 19px/1.15 var(--text); text-align: center;
+    background: var(--action); border: 1.5px solid var(--ink); border-radius: 3px; }
+  .terminal .shape { background: var(--stage); border-radius: 999px; }
+  /* connector: a line down from the stage above, with an arrowhead */
+  .stage + .stage::before { content: ""; position: absolute; left: 124px; top: 5px; height: 34px; border-left: 1.5px solid var(--ink); }
+  .stage + .stage::after { content: ""; position: absolute; left: 120px; top: 29px; width: 8px; height: 8px; border-right: 1.5px solid var(--ink); border-bottom: 1.5px solid var(--ink); transform: rotate(45deg); }
+  .stage p { font-size: 18px; line-height: 1.5; color: var(--soft); margin: 0; max-width: 58ch; }
+  @media (max-width: 720px) {
+    .stage { grid-template-columns: 1fr; row-gap: 10px; }
+    .shape { width: 250px; max-width: 100%; }
+  }
+
+  /* What the generated actions do: a plain two-column list */
+  .features { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 56px; margin: 0; }
+  .features > div { padding: 18px 0 20px; border-top: 1.5px solid var(--line); }
+  .features dt { font: 600 20px/1.3 var(--text); margin-bottom: 4px; }
+  .features dd { margin: 0; color: var(--soft); font-size: 17px; max-width: 46ch; }
+  .features code { display: block; margin-top: 8px; padding: 8px 10px; color: var(--ink); }
+  @media (max-width: 760px) { .features { grid-template-columns: 1fr; } }
+
+  /* Try it: a real sequence, so it is numbered */
+  .steps { margin: 0; padding: 0; list-style: none; counter-reset: step; max-width: 68ch; }
+  .steps li { counter-increment: step; position: relative; padding: 0 0 18px 50px; }
+  .steps li::before { content: counter(step); position: absolute; left: 0; top: -2px; width: 34px; height: 34px; display: grid; place-items: center;
+    font: 600 17px/1 var(--text); border: 1.5px solid var(--ink); border-radius: 50%; background: var(--stage); }
+  .need { max-width: 68ch; margin: 18px 0 0; color: var(--soft); }
+  .need strong { color: var(--ink); }
+
+  footer { margin-top: 84px; padding: 22px 0 40px; border-top: 1.5px solid var(--line); font-size: 15px; color: var(--soft); }
+  footer p { margin: 0 0 6px; max-width: 80ch; }
+</style>
+</head>
+<body>
+
+<header class="wrap site">
+  <a class="brand" href="./">Blue Prism Object Generator</a>
+  <nav aria-label="Page">
+    <a href="#how">How it works</a>
+    <a href="#try">Try it</a>
+    <a href="https://github.com/geba89/bp-object-generator">GitHub</a>
+  </nav>
+</header>
+
+<main class="wrap">
+  <div class="hero">
+    <h1>Scan a web page, get a Blue Prism object</h1>
+    <p class="lead">A free tool for Blue Prism developers. It reads the fields on a web page, builds a stable XPath for each one,
+      and writes the business object for you, with the actions, inputs, checks and error handling already in place.</p>
+    <div class="actions">
+      <a class="button primary" href="bp-object-generator.html">Open the generator</a>
+      <a class="button" href="bp-object-generator.html" download>Download the HTML file</a>
+      <a class="button" href="https://github.com/geba89/bp-object-generator">Source on GitHub</a>
+    </div>
+    <p class="fine">It is one HTML file that runs in your browser. Nothing is uploaded: your pages, XPaths and objects stay on your computer.</p>
+
+    <figure class="demo">
+      <picture>
+        <!-- People who prefer no animation get a still image of the scanned page -->
+        <source srcset="docs/demo-poster.png" media="(prefers-reduced-motion: reduce)">
+        <img src="docs/demo.gif" width="900" height="563" alt="Screen recording: the scanner numbers every field on a web form, then the generator groups the fields into actions and produces a Blue Prism object.">
+      </picture>
+      <figcaption>The whole workflow in half a minute, recorded on the example page in this repository.</figcaption>
+    </figure>
+  </div>
+
+  <section id="how">
+    <h2>How it works</h2>
+    <ol class="flow">
+      <li class="stage terminal"><span class="shape">Your web page</span>
+        <p>Any page you automate in Chrome or Edge.</p></li>
+      <li class="stage"><span class="shape">Scan</span>
+        <p>Run the scanner snippet in Chrome or Edge DevTools. It lists the buttons, fields, dropdowns and tables, with an XPath and a name for each.</p></li>
+      <li class="stage"><span class="shape">Combine</span>
+        <p>Choose which fields belong to which action: Fill Address, Click Save, Read Orders. Several screens can go into one object.</p></li>
+      <li class="stage"><span class="shape">Generate</span>
+        <p>Download a <code>.bpobject</code> built from your own template object, so it follows your team's naming and layout.</p></li>
+      <li class="stage terminal"><span class="shape">Import into Blue Prism</span>
+        <p>File, Import. Try it in a development environment first, like any new object.</p></li>
+    </ol>
+  </section>
+
+  <section id="does">
+    <h2>What the generated actions do</h2>
+    <dl class="features">
+      <div><dt>Skip empty inputs</dt>
+        <dd>An empty input means “leave this field alone”. The action skips it instead of blanking the field on the page.</dd></div>
+      <div><dt>Check after writing</dt>
+        <dd>Each field is read back and compared with what was written.
+          <code>Fill Details / Set Amount: field shows "12", expected "120"</code></dd></div>
+      <div><dt>Say what failed</dt>
+        <dd>Every error names the action and the step, so you don't have to guess which of fifty fields broke.
+          <code>Fill Details / Select Reason: no option "Refund" in the dropdown</code></dd></div>
+      <div><dt>Select from any dropdown</dt>
+        <dd>The option is found by its text, then selected by position, which also works where selecting by text does not.</dd></div>
+      <div><dt>Read tables into collections</dt>
+        <dd>One read of the table; the first row becomes the column names.</dd></div>
+      <div><dt>Keep XPaths in one place</dt>
+        <dd>All XPaths sit on one page as data items. When the website changes, rescan and refresh them without rebuilding the object.</dd></div>
+      <div><dt>Follow your standards</dt>
+        <dd>Prefixes, wording, layout and the steps themselves come from a template object you control.</dd></div>
+      <div><dt>Repair older objects</dt>
+        <dd>Fixes wrong object references and missing Clean Up stages in objects you generated earlier.</dd></div>
+    </dl>
+  </section>
+
+  <section id="try">
+    <h2>Try it in two minutes</h2>
+    <ol class="steps">
+      <li>Open the <a href="examples/demo-page.html">example page</a> in Chrome or Edge.</li>
+      <li>Open <a href="bp-object-generator.html">the generator</a>. Its getting-started guide has a <strong>Copy scanner</strong> button and shows where to paste it in DevTools. Run the scanner on the example page.</li>
+      <li>In the generator, load the <a href="examples/TPL%20-%20Web%20Browser%20Template.bpobject" download>example template</a> and the CSV file the scanner saved.</li>
+      <li>Group the fields by section, generate, and look at the object in a development environment.</li>
+    </ol>
+    <p class="need"><strong>For your own pages you need</strong> Blue Prism (built and tested with 7.5), Chrome or Edge, and a browser object of your own
+      with one action that clicks, reads and writes by XPath. The generator builds a matching template from it.
+      <a href="https://github.com/geba89/bp-object-generator#your-browser-object">What that action needs</a>.</p>
+  </section>
+
+  <footer>
+    <p>Free under the <a href="https://github.com/geba89/bp-object-generator/blob/main/LICENSE">MIT licence</a>.
+      Questions and ideas: <a href="https://github.com/geba89/bp-object-generator/issues">open an issue on GitHub</a>.</p>
+    <p>Not affiliated with or endorsed by Blue Prism or SS&amp;C Technologies. Blue Prism is a trademark of its owner.</p>
+  </footer>
+</main>
+
+</body>
+</html>

@@ -6,7 +6,8 @@
   "private": true,
   "scripts": {
     "test": "node tests/run-all.js",
-    "sync-scanner": "python3 tools/sync-scanner.py"
+    "sync-scanner": "python3 tools/sync-scanner.py",
+    "record-demo": "node tools/record-demo.js"
   },
   "devDependencies": {
     "playwright": "^1.48.0"

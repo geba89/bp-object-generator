@@ -8,7 +8,9 @@ Build **Blue Prism business objects for web pages** (Chrome / Edge) from scanned
 
 Everything runs **offline in your browser**: the generator is a single HTML file, nothing is uploaded anywhere. Built and tested for Blue Prism 7.5.
 
-![Combining scanned fields into actions](docs/step3-combine.png)
+**[Try it in your browser](https://geba89.github.io/bp-object-generator/)** · [Download the generator](bp-object-generator.html)
+
+![The whole workflow: scan a page, group the fields into actions, generate the object](docs/demo.gif)
 
 ## Features
 
@@ -36,7 +38,9 @@ Everything runs **offline in your browser**: the generator is a single HTML file
    - **Steps 3–5**: group the fields into actions, check the order, generate.
 5. Import the `.bpobject` in Blue Prism (File → Import) and **test it in a development environment first**.
 
-![Getting started guide](docs/getting-started.png)
+To try it without your own application, use the example page [`examples/demo-page.html`](examples/demo-page.html) and the example template in [`examples/`](examples/).
+
+![Combining scanned fields into actions](docs/step3-combine.png)
 
 ## Your browser object
 
@@ -111,6 +115,7 @@ npm test            # runs tests/run-all.js (30 test scripts)
 
 `run-table.js` also needs the Mono C# compiler (`mcs`) to compile the Read Table code stage.
 The scanner lives in `bp-xpath-scanner.js` and is embedded in the generator: after changing it, run `npm run sync-scanner`.
+`npm run record-demo` re-records `docs/demo.gif` (needs ffmpeg). `index.html` is the project page served by GitHub Pages; its fonts (Barlow, SIL Open Font License) are in `assets/fonts/`.
 
 ## License
 
