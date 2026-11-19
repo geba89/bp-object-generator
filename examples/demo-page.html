@@ -1,0 +1,33 @@
+<!doctype html>
+<html><body>
+<h1>Customer registration</h1>
+
+<h2>Personal data</h2>
+<label for="fn">First name</label> <input id="fn">
+<label for="ln">Last name</label> <input id="ln">
+<input type="radio" name="gender" value="f"> <span>Female</span>
+<input type="radio" name="gender" value="m"> <span>Male</span>
+
+<fieldset>
+  <legend>Address data</legend>
+  <label for="city">City</label> <input id="city" name="city">
+  <label for="pc">Post code</label> <input id="pc" name="postCode">
+  <label for="street">Street</label> <input id="street">
+  <label for="ctry">Country</label> <select id="ctry"><option>Poland</option><option>Germany</option></select>
+  <div role="radiogroup" aria-label="Address type">
+    <input type="radio" name="addrType" value="h"> <strong>Home</strong>
+    <input type="radio" name="addrType" value="w"> <strong>Work</strong>
+  </div>
+  <label><input type="checkbox" name="primary"> Primary address</label>
+  <button type="button">Validate address</button>
+</fieldset>
+
+<h2>Orders</h2>
+<table id="orders">
+  <tr><th>Order ID</th><th>Status</th><th></th></tr>
+  <tr><td>1001</td><td>New</td><td><button>Edit</button></td></tr>
+  <tr><td>1002</td><td>Sent</td><td><button>Edit</button></td></tr>
+</table>
+
+<button id="save">Save</button>
+</body></html>

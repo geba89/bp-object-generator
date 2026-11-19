@@ -1,0 +1,15 @@
+node_modules/
+# Everything the tests create
+tests/*.bpobject
+tests/*.csv
+tests/*.png
+tests/*.md
+tests/full-v2.html
+tests/full-docs.html
+tests/ui-docs.html
+tests/intro-scanner.js
+tests/filter-tmp/
+tests/table/*.exe
+tests/table/*.txt
+tests/table/HarnessFull.cs
+tests/table/HarnessGen.cs

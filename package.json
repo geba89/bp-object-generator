@@ -1,0 +1,14 @@
+{
+  "name": "bp-object-generator",
+  "version": "1.0.0",
+  "description": "Offline generator for Blue Prism web objects from scanned XPaths",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "test": "node tests/run-all.js",
+    "sync-scanner": "python3 tools/sync-scanner.py"
+  },
+  "devDependencies": {
+    "playwright": "^1.48.0"
+  }
+}

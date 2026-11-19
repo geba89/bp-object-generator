@@ -1,0 +1,37 @@
+<!doctype html>
+<html><head>
+<style>
+  .tool { cursor: pointer; display: inline-block; padding: 4px; border: 1px solid #ccc; }
+  img { width: 24px; height: 24px; background: #ddd; }
+</style>
+</head>
+<body onclick="/* page-level, must not be listed */">
+<h2>Toolbar</h2>
+<!-- 1. image buttons with id + onclick (the user's case) -->
+<img id="btnSave" src="/img/icons/btn_save.png" onclick="clicked('save')">
+<img id="btnPrint" src="/img/icons/btn_print.png" onclick="clicked('print')">
+
+<!-- 2. image buttons without id: onclick call / alt / file name -->
+<img src="/img/icons/btn_delete.png" onclick="deleteRow(12); return false;">
+<img src="/img/icons/btn_copy.png?v=3" alt="Copy order" onclick="clicked('copy')">
+<img src="/img/icons/btn_mail.png" onclick="sendMail()">
+
+<!-- 3. div button with a script-attached handler (no onclick attribute), icon inside -->
+<div class="tool" id="refreshTool"><img src="/img/icons/refresh.png"> Refresh</div>
+<div class="tool"><span>Export</span></div>
+
+<!-- 4. table cell with onclick -->
+<table id="list"><tr><td>1001</td><td onclick="clicked('open-1001')">Open</td></tr></table>
+
+<!-- 5. a normal button must still be found once -->
+<button id="ok">OK</button>
+
+<script>
+  window.clicks = [];
+  function clicked(what) { window.clicks.push(what); }
+  function deleteRow(n) { window.clicks.push('delete-' + n); }
+  function sendMail() { window.clicks.push('mail'); }
+  document.getElementById('refreshTool').addEventListener('click', () => window.clicks.push('refresh'));
+  document.querySelectorAll('.tool')[1].addEventListener('click', () => window.clicks.push('export'));
+</script>
+</body></html>

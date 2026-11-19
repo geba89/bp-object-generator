@@ -1,0 +1,22 @@
+<!doctype html>
+<html><head><title>Customer portal - Address</title></head>
+<body>
+<h2>Login</h2>
+<label for="user">User</label> <input id="user">
+<label for="pwd">Password</label> <input id="pwd" type="password">
+
+<fieldset>
+  <legend>Address data</legend>
+  <label for="city">City</label> <input id="city">
+  <label for="pc">Post code</label> <input id="pc">
+  <label for="ctry">Country</label> <select id="ctry"><option>Poland</option></select>
+  <img id="btnSave" src="/img/btn_save.png" alt="Save address" onclick="save()">
+</fieldset>
+
+<h2>Orders</h2>
+<table id="orders">
+  <tr><th>Order ID</th><th></th></tr>
+  <tr><td>1001</td><td><button>Edit</button></td></tr>
+  <tr><td>1002</td><td><button>Edit</button></td></tr>
+</table>
+</body></html>
